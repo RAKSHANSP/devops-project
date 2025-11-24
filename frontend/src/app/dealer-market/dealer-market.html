@@ -1,8 +1,13 @@
 <div style="text-align: center; padding: 20px; max-width: 800px; margin: 0 auto;">
   <h2>Dealer and Market Details</h2>
   <div style="margin-bottom: 20px;">
-    <input type="text" [(ngModel)]="location" placeholder="Enter location (e.g., Kolkata)" style="padding: 10px; width: 300px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px;">
-    <button (click)="searchLocation()" style="background: blue; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;">Search</button>
+    <input type="text" [(ngModel)]="location" 
+           (input)="onLocationChange()" 
+           placeholder="Enter location (e.g., Kolkata)" 
+           style="padding: 10px; width: 300px; margin-right: 10px; border: 1px solid #ddd; border-radius: 4px;">
+    <button (click)="searchLocation()" style="background: blue; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer;" [disabled]="loading">
+      {{ loading ? 'Searching...' : 'Search' }}
+    </button>
   </div>
 
   <div *ngIf="errorMessage" style="color: red; margin-bottom: 20px;">
@@ -24,9 +29,10 @@
         </li>
       </ul>
     </div>
-    <div *ngIf="dealers.length === 0 && location" style="color: gray;">
+    <div *ngIf="searched && dealers.length === 0 && location" style="color: gray;">
       No dealers found in {{ location }}.
     </div>
+    <div *ngIf="loading" style="color: #666;">Loading dealers...</div>
   </div>
 
   <!-- Markets Section -->
@@ -35,7 +41,7 @@
     <div *ngIf="markets.length > 0">
       <ul style="list-style-type: none; padding: 0;">
         <li *ngFor="let market of markets" style="margin: 10px 0; background: #f9f9f9; padding: 15px; border-radius: 5px;">
-          <h4>{{ market.name }}</h4>
+          <h3>{{ market.name }}</h3>
           <p><strong>Type:</strong> {{ market.type }}</p>
           <p><strong>Timings:</strong> {{ market.timings }}</p>
           <p><strong>Contact:</strong> {{ market.contact }}</p>
@@ -45,8 +51,9 @@
         </li>
       </ul>
     </div>
-    <div *ngIf="markets.length === 0 && location" style="color: gray;">
+    <div *ngIf="searched && markets.length === 0 && location" style="color: gray;">
       No markets found in {{ location }}.
     </div>
+    <div *ngIf="loading" style="color: #666;">Loading markets...</div>
   </div>
 </div>

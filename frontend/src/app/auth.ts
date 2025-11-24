@@ -9,11 +9,8 @@ import { Observable } from 'rxjs';
 export class AuthService {
   constructor(private http: HttpClient, private router: Router) {}
 
-  signup(user: any) {
-    return this.http.post('http://localhost:5000/signup', user).subscribe({
-      next: () => this.router.navigate(['/login']),
-      error: (err) => alert(err.error.message) // Show error message
-    });
+  signup(user: any): Observable<any> {
+    return this.http.post('http://localhost:5000/signup', user);
   }
 
   login(credentials: any): Observable<any> {

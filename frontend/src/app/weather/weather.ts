@@ -20,7 +20,7 @@ interface DailyForecast {
   templateUrl: './weather.html', // Note: Changed to .html to match your file extension
   styleUrls: ['./weather.css']
 })
-export class WeatherComponent {
+export class Weather {
   city: string = 'Delhi'; // Default city
   weatherData: any;
   forecastData: { date: string; tempMin: string; tempMax: string; humidity: string; precipProb: string; windSpeed: string; description: string; irrigationNeed: string; plantingSuitability: string; pestRisk: string }[] = [];

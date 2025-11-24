@@ -1,9 +1,48 @@
-<div style="text-align: center; padding: 50px;">
-  <h2>Login to Agri Connect</h2>
-  <form (ngSubmit)="onSubmit()" style="display: inline-block; text-align: left;">
-    <input type="email" [(ngModel)]="credentials.email" name="email" placeholder="Email" required autocomplete="new-email" style="display: block; margin: 10px 0; padding: 10px; width: 300px;"><br>
-    <input type="password" [(ngModel)]="credentials.password" name="password" placeholder="Password" required autocomplete="new-password" style="display: block; margin: 10px 0; padding: 10px; width: 300px;"><br>
-    <button type="submit" style="background: green; color: white; padding: 10px; width: 300px; border: none; cursor: pointer;">Login</button>
-  </form>
-  <p>Don't have an account? <a href="/signup">Signup</a></p>
+<div class="login-container">
+  <div class="login-box">
+    <h2>Login to Agri Connect</h2>
+
+    <!-- ✅ Success or error message -->
+    <div *ngIf="message" [style.color]="message === 'Login Successful' ? 'green' : 'red'" style="margin-bottom: 10px;">
+      {{ message }}
+    </div>
+
+    <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+      <input
+        type="email"
+        [(ngModel)]="credentials.email"
+        name="email"
+        placeholder="Email"
+        required
+        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        autocomplete="username"
+      />
+      <div *ngIf="loginForm.controls['email']?.invalid && loginForm.controls['email']?.touched" class="error">
+        <div *ngIf="loginForm.controls['email']?.errors?.['required']">
+          Email is required.
+        </div>
+        <div *ngIf="loginForm.controls['email']?.errors?.['pattern']">
+          Please enter a valid email address.
+        </div>
+      </div>
+
+      <input
+        type="password"
+        [(ngModel)]="credentials.password"
+        name="password"
+        placeholder="Password"
+        required
+        autocomplete="current-password"
+      />
+      <div *ngIf="loginForm.controls['password']?.invalid && loginForm.controls['password']?.touched" class="error">
+        <div *ngIf="loginForm.controls['password']?.errors?.['required']">
+          Password is required.
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="/signup">Signup</a></p>
+  </div>
 </div>

@@ -3,41 +3,98 @@
   
   <!-- Search Bar -->
   <div style="text-align: center; margin: 20px 0;">
-    <input type="text" [(ngModel)]="searchTerm" placeholder="Search products..." class="search-input">
-    <button (click)="loadProducts()" class="search-btn">Search</button>
+    <div style="display: flex; justify-content: center; align-items: center; gap: 10px; max-width: 500px; margin: 0 auto;">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (input)="onSearchTermChange()" 
+        placeholder="Search products..." 
+        class="search-input"
+        [disabled]="loading">
+      <button (click)="searchProducts()" class="search-btn" [disabled]="loading || !searchTerm">
+        {{ loading ? 'Searching...' : 'Search' }}
+      </button>
+      <button (click)="clearSearch()" class="clear-btn" *ngIf="searchTerm" [disabled]="loading">
+        Clear
+      </button>
+    </div>
+    <div *ngIf="searchTerm" style="color: #666; font-size: 14px; margin-top: 5px;">
+      Showing results for: "{{ searchTerm }}"
+    </div>
+  </div>
+
+  <!-- Error/Success Messages -->
+  <div *ngIf="errorMessage" class="message" [ngClass]="{'success': errorMessage.includes('success') || errorMessage.includes('saved') || errorMessage.includes('deleted') || errorMessage.includes('updated'), 'error': !errorMessage.includes('success') && !errorMessage.includes('saved') && !errorMessage.includes('deleted') && !errorMessage.includes('updated')}">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" style="text-align: center; color: #666; margin: 20px 0;">
+    <div class="spinner"></div>
+    <p>Loading products...</p>
   </div>
 
   <!-- Plus Button -->
-  <button class="plus-btn" (click)="showAddForm()">+ Add Product</button>
+  <button class="plus-btn" (click)="showAddForm()" [disabled]="loading">+ Add Product</button>
 
   <!-- Add/Edit Form (Shown when showForm = true) -->
   <div *ngIf="showForm" class="form-modal">
     <h3>{{ isEditing ? 'Edit Product' : 'Add New Product' }}</h3>
-    <input type="text" [(ngModel)]="currentProduct.name" placeholder="Name" class="input-field">
-    <textarea [(ngModel)]="currentProduct.description" placeholder="Description" class="input-field" rows="3"></textarea>
-    <input type="number" [(ngModel)]="currentProduct.quantity" placeholder="Quantity" class="input-field">
-    <input type="number" [(ngModel)]="currentProduct.price" placeholder="Price (₹)" class="input-field">
-    <input type="text" [(ngModel)]="currentProduct.location" placeholder="Location" class="input-field">
-    <input type="text" [(ngModel)]="currentProduct.phone" placeholder="Phone Number" class="input-field">
+    <input type="text" [(ngModel)]="currentProduct.name" placeholder="Name" class="input-field" required>
+    <textarea [(ngModel)]="currentProduct.description" placeholder="Description" class="input-field" rows="3" required></textarea>
+    <input type="number" [(ngModel)]="currentProduct.quantity" placeholder="Quantity" class="input-field" min="0" required>
+    <input type="number" [(ngModel)]="currentProduct.price" placeholder="Price (₹)" class="input-field" min="0" step="0.01" required>
+    <input type="text" [(ngModel)]="currentProduct.location" placeholder="Location" class="input-field" required>
+    <input type="tel" [(ngModel)]="currentProduct.phone" placeholder="Phone Number" class="input-field" required>
     <input type="file" (change)="onFileSelected($event)" accept="image/*" class="input-field">
-    <button (click)="saveProduct()" class="save-btn">{{ isEditing ? 'Update' : 'Add' }}</button>
-    <button (click)="hideForm()" class="cancel-btn">Cancel</button>
+    <div class="form-actions">
+      <button (click)="saveProduct()" class="save-btn" [disabled]="loading">
+        {{ loading ? 'Saving...' : (isEditing ? 'Update' : 'Add') }}
+      </button>
+      <button (click)="hideForm()" class="cancel-btn" [disabled]="loading">Cancel</button>
+    </div>
+    <div *ngIf="errorMessage && showForm" style="color: #dc3545; margin-top: 10px; font-size: 14px;">
+      {{ errorMessage }}
+    </div>
   </div>
 
   <!-- Product Grid -->
-  <div class="product-grid">
+  <div class="product-grid" *ngIf="!loading">
     <div *ngFor="let product of products" class="product-card">
-      <img *ngIf="product.imageUrl" [src]="'http://localhost:5000' + product.imageUrl" alt="Product Image" class="product-image">
+      <div class="product-image-container">
+        <img *ngIf="product.imageUrl" [src]="'http://localhost:5000' + product.imageUrl" alt="Product Image" class="product-image" 
+             (error)="onImageError($event)">
+        <div *ngIf="!product.imageUrl" class="no-image">No Image</div>
+      </div>
       <h3>{{ product.name }}</h3>
       <p class="description">{{ product.description }}</p>
-      <p><strong>Quantity:</strong> <span (click)="isOwner(product) ? updateQuantityInline($event, product._id) : null" contenteditable="isOwner(product)" class="editable-quantity">{{ product.quantity }}</span></p>
-      <p><strong>Price:</strong> ₹{{ product.price }}</p>
+      <p><strong>Quantity:</strong> 
+        <span (click)="isOwner(product) ? updateQuantityInline($event, product._id) : null" 
+              contenteditable="isOwner(product)" 
+              class="editable-quantity">{{ product.quantity }}</span>
+      </p>
+      <p><strong>Price:</strong> ₹{{ product.price | number:'1.2-2' }}</p>
       <p><strong>Location:</strong> {{ product.location }}</p>
       <p><strong>Phone:</strong> {{ product.phone }}</p>
-      <p><strong>Posted:</strong> {{ product.postedDate | date:'short' }} by {{ product.postedBy.name }}</p>
-      <button *ngIf="isOwner(product)" (click)="editProduct(product)" class="edit-btn">Edit</button>
-      <button *ngIf="isOwner(product)" (click)="deleteProduct(product._id)" class="delete-btn">Delete</button>
-      <button (click)="buyProduct(product)" class="buy-btn">Buy Now</button>
+      <p><strong>Posted:</strong> {{ product.postedDate | date:'short' }} by {{ product.postedBy.name }}</p> <!-- Removed ?. -->
+      <div class="product-actions">
+        <button *ngIf="isOwner(product)" (click)="editProduct(product)" class="edit-btn">Edit</button>
+        <button *ngIf="isOwner(product)" (click)="deleteProduct(product._id)" class="delete-btn">Delete</button>
+        <button (click)="buyProduct(product)" class="buy-btn">Buy Now</button>
+      </div>
     </div>
+    
+    <!-- Empty State -->
+    <div *ngIf="products.length === 0 && !loading && !errorMessage" class="empty-state">
+      <div class="empty-icon">📦</div>
+      <h3>No products available</h3>
+      <p>{{ searchTerm ? 'No products found matching your search.' : 'Start by adding your first product!' }}</p>
+      <button *ngIf="!searchTerm" (click)="showAddForm()" class="add-first-btn">Add First Product</button>
+    </div>
+  </div>
+
+  <!-- Search Results Info -->
+  <div *ngIf="searchTerm && products.length > 0" class="search-results-info">
+    <p>Found {{ products.length }} product{{ products.length !== 1 ? 's' : '' }} for "{{ searchTerm }}"</p>
   </div>
 </div>

@@ -1,13 +1,81 @@
-<div style="text-align: center; padding: 50px;">
-<div style="text-align: center; padding: 20px;">
-  <h2>Welcome to Your Dashboard</h2>
+<div class="dashboard-container">
+  <mat-sidenav-container class="sidenav-container">
+    <!-- Sidebar (Agriculture Focus) -->
+    <mat-sidenav #sidenav mode="side" opened class="sidenav">
+      <div class="logo">
+        <h2>AgriConnect</h2>
+      </div>
+      <mat-nav-list>
+        <a mat-list-item (click)="goToWeather()" class="nav-link">
+          <mat-icon></mat-icon> Check Weather
+        </a>
+        <a mat-list-item (click)="goToProducts()" class="nav-link">
+          <mat-icon></mat-icon> View Products
+        </a>
+        <a mat-list-item (click)="goToGroupChat()" class="nav-link">
+          <mat-icon></mat-icon> Group Chat
+        </a>
+        <a mat-list-item (click)="goToIndividualChat()" class="nav-link">
+          <mat-icon></mat-icon> Individual Chat
+        </a>
+        <a mat-list-item (click)="goToGovtOfficial()" class="nav-link">
+          <mat-icon></mat-icon> Govt Official Page
+        </a>
+        <a mat-list-item (click)="goToDealerMarket()" class="nav-link">
+          <mat-icon></mat-icon> Dealer & Market Data
+        </a>
+        <a mat-list-item (click)="goToInformationSharing()" class="nav-link">
+          <mat-icon></mat-icon> Share Information
+        </a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <!-- Main Content -->
+    <mat-sidenav-content>
+      <mat-toolbar color="primary" class="toolbar">
+        <button mat-icon-button (click)="sidenav.toggle()" *ngIf="isScreenSmall">
+          <mat-icon>menu</mat-icon>
+        </button>
+        <span>Welcome to Your Agri Dashboard</span>
+        <span class="spacer"></span>
+        <button mat-icon-button [matMenuTriggerFor]="userMenu" class="about-button">
+          <img src="assets/images/user-icon.png" alt="User Info" class="user-image">
+        </button>
+        <mat-menu #userMenu="matMenu" class="user-menu">
+          <span mat-menu-item *ngIf="userRole">Role: {{ userRole }}</span>
+          <button mat-menu-item (click)="logout()">Logout</button>
+        </mat-menu>
+      </mat-toolbar>
+
+      <div class="content">
+        <div class="welcome-card">
+          <h1>Welcome to AgriConnect Dashboard</h1>
+          <p>Explore features to manage crops, check weather, and connect with the farming community.</p>
+          <div class="button-group">
+            <button mat-raised-button color="primary" (click)="goToWeather()" class="feature-button">
+              <span class="button-center">Check Weather</span>
+            </button>
+            <button mat-raised-button color="accent" (click)="goToProducts()" class="feature-button">
+              <span class="button-center">View Products</span>
+            </button>
+            <button mat-raised-button color="warn" (click)="goToGroupChat()" class="feature-button">
+              <span class="button-center">Group Chat</span>
+            </button>
+            <button mat-raised-button color="primary" (click)="goToIndividualChat()" class="feature-button">
+              <span class="button-center">Individual Chat</span>
+            </button>
+            <button mat-raised-button color="accent" (click)="goToGovtOfficial()" class="feature-button">
+              <span class="button-center">Govt Official Page</span>
+            </button>
+            <button mat-raised-button color="warn" (click)="goToDealerMarket()" class="feature-button">
+              <span class="button-center">Dealer & Market Data</span>
+            </button>
+            <button mat-raised-button color="primary" (click)="goToInformationSharing()" class="feature-button">
+              <span class="button-center">Share Information</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
-  <h2>Dashboard</h2>
-  <button (click)="goToWeather()" style="background: green; color: white; padding: 10px; text-decoration: none; border: none; cursor: pointer; display: inline-block;">Check Weather</button>
-  <button (click)="goToProducts()" style="background: orange; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">View Products</button>
-  <button (click)="goToGroupChat()" style="background: blue; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">Group Chat</button>
-  <button (click)="goToIndividualChat()" style="background: teal; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">Individual Chat</button>
-  <button (click)="goToGovtOfficial()" style="background: red; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">Govt Official Page</button>
-  <button (click)="goToDealerMarket()" style="background: purple; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">Dealer and Market Data</button>
-  <button (click)="goToInformationSharing()" style="background: pink; color: white; padding: 10px; border: none; cursor: pointer; margin: 10px;">Share Information</button>
-</div>  

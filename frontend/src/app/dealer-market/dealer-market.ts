@@ -34,31 +34,75 @@ interface Market {
   templateUrl: './dealer-market.html',
   styleUrls: ['./dealer-market.css']
 })
-export class DealerMarketComponent {
+export class DealerMarket {
   location: string = '';
   dealers: Dealer[] = [];
   markets: Market[] = [];
   errorMessage: string = '';
+  loading = false; // Add loading state
+  searched = false; // Flag to indicate search has been performed
+  private searchTimeout: any; // For debouncing
 
   constructor(private http: HttpClient) {}
 
+  // Handle typing with debounce
+  onLocationChange() {
+    this.errorMessage = ''; // Clear error on typing
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+    this.searchTimeout = setTimeout(() => {
+      if (this.location.trim()) {
+        this.performSearch();
+      } else {
+        this.dealers = [];
+        this.markets = [];
+        this.searched = false;
+      }
+    }, 500); // 500ms debounce delay
+  }
+
   searchLocation() {
-    if (!this.location) {
+    if (!this.location.trim()) {
       this.errorMessage = 'Please enter a location';
       return;
     }
+    this.performSearch();
+  }
 
+  private performSearch() {
+    if (!this.location.trim()) return;
+
+    this.loading = true;
+    this.searched = true;
     this.errorMessage = '';
-    this.http.get<Dealer[]>(`http://localhost:5000/dealers?location=${this.location}`)
+
+    // Fetch dealers
+    this.http.get<Dealer[]>(`http://localhost:5000/dealers?location=${encodeURIComponent(this.location.trim())}`)
       .subscribe({
-        next: (data) => this.dealers = data,
-        error: (err) => this.errorMessage = 'Error fetching dealers'
+        next: (data) => {
+          this.dealers = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMessage = 'Error fetching dealers: ' + (err.error?.message || 'Unknown error');
+          this.dealers = [];
+          this.loading = false;
+        }
       });
 
-    this.http.get<Market[]>(`http://localhost:5000/markets?location=${this.location}`)
+    // Fetch markets
+    this.http.get<Market[]>(`http://localhost:5000/markets?location=${encodeURIComponent(this.location.trim())}`)
       .subscribe({
-        next: (data) => this.markets = data,
-        error: (err) => this.errorMessage = 'Error fetching markets'
+        next: (data) => {
+          this.markets = data;
+          this.loading = false;
+        },
+        error: (err) => {
+          this.errorMessage = 'Error fetching markets: ' + (err.error?.message || 'Unknown error');
+          this.markets = [];
+          this.loading = false;
+        }
       });
   }
 }

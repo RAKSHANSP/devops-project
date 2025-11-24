@@ -1,37 +1,36 @@
-<div style="text-align: center; padding: 20px; max-width: 600px; margin: 0 auto;">
-  <h2>Weather Forecast</h2>
-  <div style="margin-bottom: 10px;">
-    <input type="text" [(ngModel)]="city" placeholder="Enter city name" style="padding: 10px; width: 200px; margin-right: 10px;">
-    <button (click)="getWeather(); getForecast()" style="background: blue; color: white; padding: 10px; border: none; cursor: pointer;">Get Weather & Forecast</button>
+<div style="text-align: center; padding: 20px; max-width: 900px; margin: 0 auto; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #e6f0fa; border-radius: 12px; box-shadow: 0 6px 12px rgba(0,0,0,0.1);">
+  <h2 style="color: #1e3a8a; margin-bottom: 25px; font-size: 28px; text-transform: uppercase; letter-spacing: 1px;">Weather Forecast</h2>
+  <div style="margin-bottom: 25px;">
+    <input type="text" [(ngModel)]="city" placeholder="Enter city name" style="padding: 14px; width: 300px; margin-right: 20px; border: 2px solid #1e40af; border-radius: 8px; font-size: 16px; color: #1e3a8a; background: #ffffff;">
+    <button (click)="getWeather(); getForecast()" style="background: #1e40af; color: white; padding: 14px 30px; border: none; cursor: pointer; border-radius: 8px; font-size: 16px; transition: background 0.3s; text-transform: uppercase;">Get Weather & Forecast</button>
   </div>
 
-  <div *ngIf="errorMessage" style="color: red; margin-top: 10px;">
+  <div *ngIf="errorMessage" style="color: #dc3545; margin-top: 15px; font-weight: bold; font-size: 16px;">
     {{ errorMessage }}
   </div>
 
-  <div *ngIf="weatherData" style="margin-top: 20px; background: #f9f9f9; padding: 15px; border-radius: 5px;">
-    <h3>Current Weather in {{ weatherData.name }}, {{ weatherData.sys.country }}</h3>
-    <p><strong>Temperature:</strong> {{ weatherData.main.temp }}°C</p>
-    <p><strong>Humidity:</strong> {{ weatherData.main.humidity }}%</p>
-    <p><strong>Condition:</strong> {{ weatherData.weather[0].description }}</p>
-    <p><strong>Wind Speed:</strong> {{ weatherData.wind.speed }} m/s</p>
-    <button (click)="getWeather(); getForecast()" style="background: green; color: white; padding: 5px 10px; border: none; cursor: pointer; margin-top: 10px;">Refresh</button>
+  <div *ngIf="weatherData" style="margin-top: 25px; background: #ffffff; padding: 25px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    <h3 style="color: #1e3a8a; margin-bottom: 20px; font-size: 22px;">Current Weather in {{ weatherData.name }}, {{ weatherData.sys.country }}</h3>
+    <p style="margin: 12px 0; font-size: 18px;"><strong>Temperature:</strong> {{ weatherData.main.temp }}°C</p>
+    <p style="margin: 12px 0; font-size: 18px;"><strong>Humidity:</strong> {{ weatherData.main.humidity }}%</p>
+    <p style="margin: 12px 0; font-size: 18px;"><strong>Condition:</strong> {{ weatherData.weather[0].description }}</p>
+    <p style="margin: 12px 0; font-size: 18px;"><strong>Wind Speed:</strong> {{ weatherData.wind.speed }} m/s</p>
   </div>
 
-  <div *ngIf="forecastData.length > 0" style="margin-top: 20px;">
-    <h3>5-Day Agriculture Forecast</h3>
-    <ul style="list-style-type: none; padding: 0;">
-      <li *ngFor="let day of forecastData" style="margin: 10px 0; background: #e0e0e0; padding: 10px; border-radius: 5px;">
-        <strong>{{ day.date }}</strong><br>
+  <div *ngIf="forecastData.length > 0" style="margin-top: 30px;">
+    <h3 style="color: #1e3a8a; margin-bottom: 20px; font-size: 22px;">5-Day Agriculture Forecast</h3>
+    <div style="display: flex; flex-direction: column; gap: 15px;">
+      <div *ngFor="let day of forecastData" style="background: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); border-left: 4px solid #1e40af;">
+        <strong style="font-size: 18px; color: #1e3a8a;">{{ day.date }}</strong><br>
         Temp: {{ day.tempMin }}°C - {{ day.tempMax }}°C<br>
         Humidity: {{ day.humidity }}%<br>
         Precip Chance: {{ day.precipProb }}%<br>
         Wind: {{ day.windSpeed }} m/s<br>
         Condition: {{ day.description }}<br>
-        <em>Irrigation:</em> {{ day.irrigationNeed }}<br>
-        <em>Planting:</em> {{ day.plantingSuitability }}<br>
-        <em>Pest Risk:</em> {{ day.pestRisk }}
-      </li>
-    </ul>
+        <em style="color: #64748b;">Irrigation:</em> {{ day.irrigationNeed }}<br>
+        <em style="color: #64748b;">Planting:</em> {{ day.plantingSuitability }}<br>
+        <em style="color: #64748b;">Pest Risk:</em> {{ day.pestRisk }}
+      </div>
+    </div>
   </div>
 </div>

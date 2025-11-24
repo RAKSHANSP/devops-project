@@ -1,37 +1,79 @@
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common'; // Add CommonModule for common directives
-import { RouterModule } from '@angular/router'; // Add RouterModule for routerLink
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatToolbarModule } from '@angular/material/toolbar';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { MatListModule } from '@angular/material/list';
+import { MatMenuModule } from '@angular/material/menu';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule], // Add required imports
+  imports: [
+    CommonModule,
+    RouterModule,
+    MatSidenavModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatIconModule,
+    MatListModule,
+    MatMenuModule
+  ],
   templateUrl: './dashboard.html',
   styleUrls: ['./dashboard.css']
 })
-export class Dashboard {
-  constructor(private router: Router) {} // Inject Router
+export class Dashboard{
+  isScreenSmall: boolean = false;
+  userRole: string | null = 'Farmer'; // Placeholder; replace with auth service data
+
+  constructor(private router: Router) {
+    this.checkScreenSize();
+    // Fetch user role from AuthService or localStorage on init
+    // Example: this.userRole = this.authService.getUserRole();
+  }
+
+  @HostListener('window:resize', ['$event'])
+  onResize(event: any) {
+    this.checkScreenSize();
+  }
+
+  checkScreenSize() {
+    this.isScreenSmall = window.innerWidth < 600;
+  }
 
   goToWeather() {
-    this.router.navigate(['/weather']); // Navigate to Weather Module
+    this.router.navigate(['/weather']);
   }
+
   goToProducts() {
     this.router.navigate(['/products']);
   }
-  goToDealerMarket() {
-    this.router.navigate(['/dealer-market']);
+
+  goToGroupChat() {
+    this.router.navigate(['/group-chat']);
   }
-  goToInformationSharing() {
-    this.router.navigate(['/information-sharing']);
+
+  goToIndividualChat() {
+    this.router.navigate(['/individual-chat']);
   }
+
   goToGovtOfficial() {
     this.router.navigate(['/govt-official']);
   }
-  goToIndividualChat() { 
-    this.router.navigate(['/individual-chat']);
+
+  goToDealerMarket() {
+    this.router.navigate(['/dealer-market']);
   }
-  goToGroupChat() { 
-    this.router.navigate(['/group-chat']);
+
+  goToInformationSharing() {
+    this.router.navigate(['/information-sharing']);
+  }
+
+  logout() {
+    localStorage.removeItem('authToken');
+    this.router.navigate(['/login']);
   }
 }

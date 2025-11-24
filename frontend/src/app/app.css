@@ -1,0 +1,24 @@
+/* Prevent layout shift when vertical scrollbar appears */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll; /* Always reserve scrollbar space */
+}
+
+/* Center the signup section properly */
+.signup-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+/* Optional: Reserve space for error messages to avoid small jumps */
+.error-message {
+  min-height: 18px;
+  color: red;
+  font-size: 13px;
+}

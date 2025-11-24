@@ -14,14 +14,14 @@ app.use(cors());
 // Ensure uploads directory exists
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) {
-  fs.mkdirSync(UPLOAD_DIR);
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true }); // Ensure directory is created with proper permissions
 }
 // Serve uploaded files statically
 app.use('/uploads', express.static(UPLOAD_DIR));
 
 mongoose.connect('mongodb://localhost:27017/agrconnect', { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
+  .catch(err => console.log('MongoDB connection error:', err));
 
 // ===== Schemas =====
 const UserSchema = new mongoose.Schema({
@@ -97,7 +97,7 @@ const LikeSchema = new mongoose.Schema({
 });
 const Like = mongoose.model('Like', LikeSchema);
 
-// ===== ✅ Govt Message Schema =====
+// ===== Govt Message Schema =====
 const GovtMessageSchema = new mongoose.Schema({
   text: { type: String, required: true },
   postedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -105,18 +105,29 @@ const GovtMessageSchema = new mongoose.Schema({
 });
 const GovtMessage = mongoose.model('GovtMessage', GovtMessageSchema);
 
-// ===== ✅ Individual Message Schema =====
+// ===== Individual Message Schema =====
 const IndividualMessageSchema = new mongoose.Schema({
   sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   receiver: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  text: { type: String, required: true },
+  text: { type: String }, // Made optional to allow file-only messages
   sentDate: { type: Date, default: Date.now },
+  fileUrl: { type: String } // Added for file attachments
 });
 const IndividualMessage = mongoose.model('IndividualMessage', IndividualMessageSchema);
 
+// ===== Group Message Schema =====
+const GroupMessageSchema = new mongoose.Schema({
+  groupId: { type: String, default: 'global' }, // For future groups
+  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  text: { type: String }, // Made optional to allow file-only messages
+  sentDate: { type: Date, default: Date.now },
+  fileUrl: { type: String } // Added for file attachments
+});
+const GroupMessage = mongoose.model('GroupMessage', GroupMessageSchema);
+
 const JWT_SECRET = '1234567890'; // Change in production
 
-// ===== Multer for image upload =====
+// ===== Multer for image and file upload =====
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, UPLOAD_DIR);
@@ -128,10 +139,14 @@ const storage = multer.diskStorage({
 });
 const upload = multer({
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 },
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: (req, file, cb) => {
-    if (file.mimetype.startsWith('image/')) cb(null, true);
-    else cb(new Error('Only images allowed'), false);
+    const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error(`Unsupported file type: ${file.mimetype}. Only images, PDFs, Word docs, or text files are allowed.`), false);
+    }
   }
 });
 
@@ -392,9 +407,7 @@ app.get('/govt-messages', async (req, res) => {
   }
 });
 
-// ===== ✅ Individual Messaging Routes =====
-
-// Get users for sidebar
+// ===== Individual Messaging Routes =====
 app.get('/users', authenticateToken, async (req, res) => {
   try {
     const users = await User.find({ _id: { $ne: req.user.userId } }).select('name email role');
@@ -404,21 +417,39 @@ app.get('/users', authenticateToken, async (req, res) => {
   }
 });
 
-// Send message
-app.post('/individual-messages', authenticateToken, async (req, res) => {
-  const { receiverId, text } = req.body;
+app.post('/individual-messages', authenticateToken, upload.single('file'), async (req, res) => {
   try {
-    if (!text.trim()) return res.status(400).json({ message: 'Message required' });
-    const message = new IndividualMessage({ sender: req.user.userId, receiver: receiverId, text });
+    const { receiverId, text = '' } = req.body;
+    const file = req.file;
+
+    // Validate input
+    if (!text.trim() && !file) {
+      return res.status(400).json({ message: 'Message or file is required' });
+    }
+    if (!receiverId) {
+      return res.status(400).json({ message: 'Receiver ID is required' });
+    }
+
+    // Create message
+    const messageData = {
+      sender: req.user.userId,
+      receiver: receiverId,
+      text: text.trim() || undefined,
+      fileUrl: file ? `/uploads/${file.filename}` : undefined
+    };
+    console.log('Individual message data:', messageData); // Debug log
+    const message = new IndividualMessage(messageData);
     await message.save();
+
+    // Populate sender and receiver details
     const populatedMessage = await IndividualMessage.findById(message._id).populate('sender receiver', 'name');
     res.status(201).json({ message: 'Sent', message: populatedMessage });
-  } catch {
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    console.error('Server error in /individual-messages:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
 
-// Get messages between users
 app.get('/individual-messages/:receiverId', authenticateToken, async (req, res) => {
   try {
     const messages = await IndividualMessage.find({
@@ -428,45 +459,52 @@ app.get('/individual-messages/:receiverId', authenticateToken, async (req, res) 
       ]
     }).sort({ sentDate: 1 }).populate('sender receiver', 'name');
     res.json(messages);
-  } catch {
-    res.status(500).json({ message: 'Server error' });
+  } catch (err) {
+    console.error('Server error in /individual-messages GET:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
 
-// Group Message Schema (assume one global group for simplicity; use groupId for multiple)
-const GroupMessageSchema = new mongoose.Schema({
-  groupId: { type: String, default: 'global' }, // For future groups
-  sender: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  text: { type: String, required: true },
-  sentDate: { type: Date, default: Date.now },
-});
-
-const GroupMessage = mongoose.model('GroupMessage', GroupMessageSchema);
-
-// Send group message
-app.post('/group-messages', authenticateToken, async (req, res) => {
-  const { text, groupId = 'global' } = req.body;
+// ===== Group Message Routes =====
+app.post('/group-messages', authenticateToken, upload.single('file'), async (req, res) => {
   try {
-    if (!text.trim()) return res.status(400).json({ message: 'Message required' });
-    const message = new GroupMessage({ groupId, sender: req.user.userId, text });
+    const { text = '', groupId = 'global' } = req.body;
+    const file = req.file;
+
+    // Validate input
+    if (!text.trim() && !file) {
+      return res.status(400).json({ message: 'Message or file is required' });
+    }
+
+    // Create message
+    const messageData = {
+      groupId,
+      sender: req.user.userId,
+      text: text.trim() || undefined,
+      fileUrl: file ? `/uploads/${file.filename}` : undefined
+    };
+    const message = new GroupMessage(messageData);
     await message.save();
+
+    // Populate sender details
     const populatedMessage = await GroupMessage.findById(message._id).populate('sender', 'role');
     res.status(201).json({ message: 'Message sent', message: populatedMessage });
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Server error in /group-messages:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
   }
 });
 
-// Get group messages
 app.get('/group-messages/:groupId', async (req, res) => {
   const { groupId = 'global' } = req.params;
   try {
-    const messages = await GroupMessage.find({ groupId }).sort({ sentDate: 1 }).populate('sender', 'role');
+    const messages = await GroupMessage.find({ groupId }).sort({ sentDate: 1 }).populate('sender', 'name role');
     res.json(messages);
   } catch (err) {
-    res.status(500).json({ message: 'Server error' });
+    console.error('Server error in /group-messages GET:', err);
+    res.status(500).json({ message: 'Internal server error', error: err.message });
   }
-});
+}); 
 
 // ===== Start Server =====
 const PORT = 5000;

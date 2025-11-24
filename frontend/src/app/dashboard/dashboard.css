@@ -1,0 +1,123 @@
+.dashboard-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #e0f7fa 0%, #d1e8e2 50%, #a5d6a7 100%);
+  color: #2f4f4f;
+  font-family: 'Georgia', serif;
+}
+
+.sidenav-container {
+  height: 100%;
+}
+
+.sidenav {
+  width: 280px;
+  background: linear-gradient(135deg, #558b2f 0%, #689f38 100%);
+  color: white;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 1.5em;
+  font-weight: bold;
+}
+
+.nav-link {
+  color: white !important;
+  padding: 15px;
+  transition: background 0.3s;
+}
+
+.nav-link:hover, .nav-link.active {
+  background: rgba(255, 255, 255, 0.2);
+  border-left: 4px solid #fff;
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(90deg, #558b2f 0%, #81c784 100%);
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.about-button {
+  margin-left: 10px;
+}
+
+.user-image {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.user-menu {
+  padding: 10px;
+}
+
+.content {
+  padding: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 64px);
+}
+
+.welcome-card {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 900px;
+  width: 100%;
+  border: 1px solid #a5d6a7;
+}
+
+.button-group {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.feature-button {
+  min-width: 200px;
+  padding: 12px 20px;
+  font-size: 1em;
+  text-transform: uppercase;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+  background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+}
+
+.button-center {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.feature-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+@media (max-width: 600px) {
+  .sidenav {
+    width: 200px;
+  }
+  .welcome-card {
+    padding: 20px;
+  }
+  .feature-button {
+    min-width: 150px;
+  }
+}

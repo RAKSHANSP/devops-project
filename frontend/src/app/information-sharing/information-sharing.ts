@@ -7,7 +7,7 @@ interface Post {
   _id: string;
   text: string;
   imageUrl?: string;
-  postedBy: { _id?: string; name: string; role: string }; // add _id for ownership
+  postedBy: { _id?: string; name: string; role: string };
   postedDate: Date;
   likes: string[];
   comments: { _id: string; text: string; commentedBy: { name: string }; commentedDate: Date }[];
@@ -20,26 +20,39 @@ interface Post {
   templateUrl: './information-sharing.html',
   styleUrls: ['./information-sharing.css']
 })
-export class InformationSharingComponent {
+export class InformationSharing {
   posts: Post[] = [];
   newPostText: string = '';
   newPostImage: File | null = null;
+  previewImage: string | ArrayBuffer | null = null;
   token = localStorage.getItem('token') || '';
   commentText: string = '';
   selectedPostId: string = '';
+  backendUrl = 'http://localhost:5000';
 
   constructor(private http: HttpClient) {
     this.loadPosts();
   }
 
   onImageSelected(event: any) {
-    this.newPostImage = event.target.files[0];
+    const file = event.target.files[0];
+    this.newPostImage = file;
+
+    // Preview image
+    const reader = new FileReader();
+    reader.onload = () => this.previewImage = reader.result;
+    reader.readAsDataURL(file);
   }
 
   loadPosts() {
-    this.http.get<Post[]>('http://localhost:5000/posts')
+    this.http.get<Post[]>(`${this.backendUrl}/posts`)
       .subscribe({
-        next: (data) => this.posts = data,
+        next: (data) => {
+          this.posts = data.map(post => ({
+            ...post,
+            imageUrl: post.imageUrl ? `${this.backendUrl}${post.imageUrl}` : undefined
+          }));
+        },
         error: (err) => alert('Error loading posts: ' + (err.error?.message || 'Unknown error'))
       });
   }
@@ -51,16 +64,15 @@ export class InformationSharingComponent {
 
     const formData = new FormData();
     formData.append('text', this.newPostText);
-    if (this.newPostImage) {
-      formData.append('image', this.newPostImage);
-    }
+    if (this.newPostImage) formData.append('image', this.newPostImage);
 
-    this.http.post('http://localhost:5000/posts', formData, {
+    this.http.post(`${this.backendUrl}/posts`, formData, {
       headers: { Authorization: `Bearer ${this.token}` }
     }).subscribe({
       next: () => {
         this.newPostText = '';
         this.newPostImage = null;
+        this.previewImage = null;
         this.loadPosts();
       },
       error: (err) => alert('Error posting: ' + (err.error?.message || 'Unknown error'))
@@ -69,7 +81,7 @@ export class InformationSharingComponent {
 
   addComment(postId: string) {
     if (!this.commentText.trim()) return alert('Comment cannot be empty');
-    this.http.post(`http://localhost:5000/posts/${postId}/comments`, { text: this.commentText.trim() }, {
+    this.http.post(`${this.backendUrl}/posts/${postId}/comments`, { text: this.commentText.trim() }, {
       headers: { Authorization: `Bearer ${this.token}` }
     }).subscribe({
       next: () => {
@@ -81,7 +93,7 @@ export class InformationSharingComponent {
   }
 
   toggleLike(postId: string) {
-    this.http.post(`http://localhost:5000/posts/${postId}/like`, {}, {
+    this.http.post(`${this.backendUrl}/posts/${postId}/like`, {}, {
       headers: { Authorization: `Bearer ${this.token}` }
     }).subscribe(() => this.loadPosts());
   }
@@ -90,25 +102,23 @@ export class InformationSharingComponent {
     this.selectedPostId = postId;
   }
 
-  // ✅ Delete a post
   deletePost(postId: string) {
     if (!confirm('Are you sure you want to delete this post?')) return;
 
-    this.http.delete(`http://localhost:5000/posts/${postId}`, {
+    this.http.delete(`${this.backendUrl}/posts/${postId}`, {
       headers: { Authorization: `Bearer ${this.token}` }
     }).subscribe({
       next: () => {
-        this.posts = this.posts.filter(p => p._id !== postId); // update UI
+        this.posts = this.posts.filter(p => p._id !== postId);
       },
       error: (err) => alert('Error deleting post: ' + (err.error?.message || 'Unknown error'))
     });
   }
 
-  // ✅ Check if current logged-in user is the post owner
   isOwner(post: Post): boolean {
     if (!this.token) return false;
     try {
-      const payload = JSON.parse(atob(this.token.split('.')[1])); // decode JWT
+      const payload = JSON.parse(atob(this.token.split('.')[1]));
       return post.postedBy && (post.postedBy as any)._id === payload.userId;
     } catch {
       return false;

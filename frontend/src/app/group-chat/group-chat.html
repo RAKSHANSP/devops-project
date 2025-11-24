@@ -1,21 +1,45 @@
-<div class="chat-container">
-  <div class="chat-area">
-    <div class="chat-header">
-      Global Group Chat
-    </div>
-    <div class="messages-feed">
-      <div *ngFor="let msg of messages" class="message" [class.sent]="isOwnMessage(msg)">
-        <strong>{{ msg.sender.name }} ({{ msg.sender.role }})</strong> - {{ msg.sentDate | date:'short' }}
-        <p>{{ msg.text }}</p>
-        <button *ngIf="isOwnMessage(msg)" (click)="deleteOwnMessage(msg._id)" class="delete-btn">Delete</button>
+<div class="whatsapp-chat-container">
+  <div class="chat-header">
+    <h2>Group Chat</h2>
+  </div>
+
+  <!-- Error/Success Messages -->
+  <div *ngIf="errorMessage" class="message" [ngClass]="{'success': errorMessage.includes('success') || errorMessage.includes('sent'), 'error': !errorMessage.includes('success') && !errorMessage.includes('sent')}">
+    {{ errorMessage }}
+  </div>
+
+  <!-- Loading Indicator -->
+  <div *ngIf="loading" class="loading">
+    <div class="spinner"></div>
+    <p>{{ messages.length === 0 ? 'Loading messages...' : 'Sending message...' }}</p>
+  </div>
+
+  <!-- Messages List -->
+  <div class="messages-list" *ngIf="!loading">
+    <div *ngFor="let message of messages" class="message-item" [ngClass]="{'own-message': message.sender._id === currentUserId, 'has-file': message.fileUrl}">
+      <div class="message-header">
+        <strong>{{ message.sender.name || message.sender.role }}</strong>
+        <span class="timestamp">{{ message.sentDate | date:'short' }}</span>
       </div>
+      <div class="message-text" *ngIf="message.text">{{ message.text }}</div>
+      <a *ngIf="message.fileUrl" [href]="'http://localhost:5000' + message.fileUrl" target="_blank" class="file-link">📎 Attached File</a>
     </div>
-    <div class="message-input">
-      <input type="text" [(ngModel)]="newMessageText" placeholder="Type a message..." (keyup.enter)="sendMessage()">
-      <button (click)="sendMessage()">Send</button>
+
+    <!-- Empty State -->
+    <div *ngIf="messages.length === 0 && !errorMessage" class="empty-state">
+      <div class="empty-icon">💬</div>
+      <h3>No messages yet. Start the conversation!</h3>
+      <p>Send your first message or attach a file below.</p>
     </div>
   </div>
-  <div *ngIf="messages.length === 0" class="no-messages">
-    No messages yet. Start the conversation!
+
+  <!-- Message Input -->
+  <div class="input-container">
+    <input type="file" id="file-input" (change)="onFileSelected($event)" class="file-input" [disabled]="loading || !token" accept="image/*,application/pdf,.doc,.docx,.txt">
+    <label for="file-input" class="attach-btn" [class.disabled]="loading || !token">📎</label>
+    <textarea [(ngModel)]="newMessage" (keyup.enter)="onEnter($event)" placeholder="Type a message..." class="message-input" [disabled]="loading || !token" rows="1"></textarea>
+    <button (click)="sendMessage()" class="send-btn" [disabled]="loading || (!newMessage.trim() && !selectedFile) || !token">
+      {{ loading ? 'Sending...' : 'Send' }}
+    </button>
   </div>
 </div>

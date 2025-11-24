@@ -1,44 +1,41 @@
-<h2>Information Sharing</h2>
+<div class="feed-container">
+  <h2>Information Sharing</h2>
 
-<!-- Create Post -->
-<div class="new-post">
-  <textarea [(ngModel)]="newPostText" placeholder="Write a description..."></textarea>
-  <input type="file" (change)="onImageSelected($event)" />
-  <button (click)="createPost()">Share</button>
-</div>
-
-<hr />
-
-<!-- Posts Feed -->
-<div *ngFor="let post of posts" class="post-card">
-  <div class="post-header">
-    <b>{{ post.postedBy.name }}</b> <small>({{ post.postedBy.role }})</small>
+  <!-- Create Post -->
+  <div class="new-post">
+    <textarea [(ngModel)]="newPostText" placeholder="Write a description..."></textarea>
+    <input type="file" (change)="onImageSelected($event)" />
+    <img *ngIf="previewImage" [src]="previewImage" class="post-img" />
+    <button (click)="createPost()">Share</button>
   </div>
 
-  <div class="post-content">
-    <p>{{ post.text }}</p>
-    <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Post Image" class="post-img" />
-  </div>
-
-  <div class="post-footer">
-    <button (click)="toggleLike(post._id)">❤️ {{ post.likes.length }}</button>
-    <small>{{ post.postedDate | date:'short' }}</small>
-
-    <!-- ✅ Delete Button (only visible for owner) -->
-    <button *ngIf="isOwner(post)" (click)="deletePost(post._id)" class="delete-btn">🗑 Delete</button>
-  </div>
-
-  <!-- Comments Section -->
-  <div class="comments">
-    <div *ngFor="let comment of post.comments" class="comment">
-      <b>{{ comment.commentedBy.name }}</b>: {{ comment.text }}
+  <!-- Posts Feed -->
+  <div *ngFor="let post of posts" class="post-card">
+    <div class="post-header">
+      <b>{{ post.postedBy.name }}</b> <small>({{ post.postedBy.role }})</small>
     </div>
-  </div>
 
-  <!-- Add Comment -->
-  <div *ngIf="selectedPostId === post._id">
-    <input [(ngModel)]="commentText" placeholder="Add a comment..." />
-    <button (click)="addComment(post._id)">Post</button>
+    <div class="post-content">
+      <p>{{ post.text }}</p>
+      <img *ngIf="post.imageUrl" [src]="post.imageUrl" alt="Post Image" class="post-img" />
+    </div>
+
+    <div class="post-footer">
+      <button (click)="toggleLike(post._id)">❤️ {{ post.likes.length }}</button>
+      <small>{{ post.postedDate | date:'short' }}</small>
+      <button *ngIf="isOwner(post)" (click)="deletePost(post._id)" class="delete-btn">🗑 Delete</button>
+    </div>
+
+    <div class="comments">
+      <div *ngFor="let comment of post.comments" class="comment">
+        <b>{{ comment.commentedBy.name }}</b>: {{ comment.text }}
+      </div>
+    </div>
+
+    <div *ngIf="selectedPostId === post._id">
+      <input [(ngModel)]="commentText" placeholder="Add a comment..." />
+      <button (click)="addComment(post._id)">Post</button>
+    </div>
+    <button (click)="selectPostForComment(post._id)">💬 Comment</button>
   </div>
-  <button (click)="selectPostForComment(post._id)">💬 Comment</button>
 </div>

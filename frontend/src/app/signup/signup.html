@@ -1,18 +1,74 @@
-<div style="text-align: center; padding: 50px;">
-  <h2>Signup to Agri Connect</h2>
-  <form (ngSubmit)="onSubmit()" style="display: inline-block; text-align: left;">
-    <input type="text" [(ngModel)]="user.name" name="name" placeholder="Name" required style="display: block; margin: 10px 0; padding: 10px; width: 300px;"><br>
-    <select [(ngModel)]="user.role" name="role" required style="display: block; margin: 10px 0; padding: 10px; width: 300px;">
-      <option value="" disabled>Select User Type</option>
-      <option value="dealer">Dealer</option>
-      <option value="farmer">Farmer</option>
-      <option value="govtOfficial">Govt Official</option>
-      <option value="buyer">Buyer</option>
-      <option value="Admin"></option>
-    </select><br>
-    <input type="email" [(ngModel)]="user.email" name="email" placeholder="Email" required autocomplete="new-email" style="display: block; margin: 10px 0; padding: 10px; width: 300px;"><br>
-    <input type="password" [(ngModel)]="user.password" name="password" placeholder="Password" required autocomplete="new-password" style="display: block; margin: 10px 0; padding: 10px; width: 300px;"><br>
-    <button type="submit" style="background: green; color: white; padding: 10px; width: 300px; border: none; cursor: pointer;">Signup</button>
-  </form>
-  <p>Already have an account? <a href="/login">Login</a></p>
+<div class="signup-container">
+  <div class="signup-box">
+    <h2>Signup to Agri Connect</h2>
+
+    <!-- ✅ Success or error message -->
+    <div *ngIf="message" [style.color]="isSuccess ? 'green' : 'red'" style="margin-bottom: 10px;">
+      {{ message }}
+    </div>
+
+    <form #signupForm="ngForm" (ngSubmit)="onSubmit()">
+      <input
+        type="text"
+        [(ngModel)]="user.name"
+        name="name"
+        placeholder="Name"
+        required
+      />
+      <div *ngIf="signupForm.controls['name']?.invalid && signupForm.controls['name']?.touched" class="error">
+        Name is required.
+      </div>
+
+      <select [(ngModel)]="user.role" name="role" required>
+        <option value="" disabled>Select User Type</option>
+        <option value="dealer">Dealer</option>
+        <option value="farmer">Farmer</option>
+        <option value="govtOfficial">Govt Official</option>
+        <option value="buyer">Buyer</option>
+      </select>
+      <div *ngIf="signupForm.controls['role']?.invalid && signupForm.controls['role']?.touched" class="error">
+        Please select a user type.
+      </div>
+
+      <input
+        type="email"
+        [(ngModel)]="user.email"
+        name="email"
+        placeholder="Email"
+        required
+        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+        autocomplete="new-email"
+      />
+      <div *ngIf="signupForm.controls['email']?.invalid && signupForm.controls['email']?.touched" class="error">
+        <div *ngIf="signupForm.controls['email']?.errors?.['required']">
+          Email is required.
+        </div>
+        <div *ngIf="signupForm.controls['email']?.errors?.['pattern']">
+          Please enter a valid email address.
+        </div>
+      </div>
+
+      <input
+        type="password"
+        [(ngModel)]="user.password"
+        name="password"
+        placeholder="Password"
+        required
+        pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$"
+        autocomplete="new-password"
+      />
+      <div *ngIf="signupForm.controls['password']?.invalid && signupForm.controls['password']?.touched" class="error">
+        <div *ngIf="signupForm.controls['password']?.errors?.['required']">
+          Password is required.
+        </div>
+        <div *ngIf="signupForm.controls['password']?.errors?.['pattern']">
+          Must include uppercase, lowercase, and special character.
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="signupForm.invalid">Signup</button>
+    </form>
+
+    <p>Already have an account? <a href="/login">Login</a></p>
+  </div>
 </div>

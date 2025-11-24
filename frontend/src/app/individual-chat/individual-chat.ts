@@ -25,7 +25,7 @@ interface Message {
   templateUrl: './individual-chat.html',
   styleUrls: ['./individual-chat.css']
 })
-export class IndividualChatComponent implements OnInit {
+export class IndividualChat implements OnInit {
   users: User[] = [];
   messages: Message[] = [];
   searchUserTerm: string = '';

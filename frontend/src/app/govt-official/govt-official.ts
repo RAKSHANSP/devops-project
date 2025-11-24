@@ -17,7 +17,7 @@ interface GovtMessage {
   templateUrl: './govt-official.html',
   styleUrls: ['./govt-official.css']
 })
-export class GovtOfficialComponent implements OnInit {
+export class GovtOfficial implements OnInit {
   messages: GovtMessage[] = [];
   newMessageText: string = '';
   token = localStorage.getItem('token') || '';
