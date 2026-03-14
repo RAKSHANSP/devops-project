@@ -5,27 +5,22 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                echo "Checking out the project"
+                echo "Cloning repository..."
                 git branch: 'main', url: 'https://github.com/RAKSHANSP/devops-project.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building the application"
+                echo "Building application..."
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                echo "Running SonarQube Scan"
+                echo "Running SonarQube analysis..."
                 withSonarQubeEnv('My Sonar Server') {
-                    sh """
-                    sonar-scanner \
-                    -Dsonar.projectKey=devops-project \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://localhost:9000
-                    """
+                    sh 'sonar-scanner'
                 }
             }
         }
