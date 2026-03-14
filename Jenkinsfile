@@ -1,29 +1,30 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven'
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                echo "Cloning repository..."
-                git branch: 'main', url: 'https://github.com/RAKSHANSP/devops-project.git'
+                git 'https://github.com/RAKSHANSP/devops-project.git'
             }
         }
 
         stage('Build') {
             steps {
-                echo "Building application..."
+                sh 'mvn clean package'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                echo "Running SonarQube analysis..."
-                withSonarQubeEnv('My Sonar Server') {
-                    sh 'sonar-scanner'
+                withSonarQubeEnv('sonarqube-server') {
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
-
     }
 }
