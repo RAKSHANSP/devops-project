@@ -1,14 +1,11 @@
 pipeline {
     agent any
 
-    tools {
-        sonarScanner 'SonarScanner'
-    }
-
     stages {
 
         stage('Checkout') {
             steps {
+                echo "Checking out source code"
                 git 'https://github.com/RAKSHANSP/devops-project.git'
             }
         }
@@ -21,8 +18,9 @@ pipeline {
 
         stage('SonarQube Analysis') {
             steps {
+                echo "Running SonarQube analysis"
                 withSonarQubeEnv('My Sonar Server') {
-                    sh "${tool 'SonarScanner'}/bin/sonar-scanner"
+                    sh 'sonar-scanner'
                 }
             }
         }
