@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/govt-official/govt-official.css"],
+  "sourcesContent": [".chat-container {\n  max-width: 600px;\n  margin: 0 auto;\n  padding: 20px;\n}\n\n.chat-area {\n  background: #f0f0f0;\n  height: 80vh;\n  overflow-y: auto;\n  border-radius: 8px;\n  padding: 20px;\n}\n\n.post-form {\n  margin-bottom: 20px;\n}\n\n.message-input {\n  width: 100%;\n  padding: 10px;\n  border: 1px solid #ddd;\n  border-radius: 4px;\n  resize: vertical;\n  margin-bottom: 10px;\n}\n\n.post-btn {\n  background: blue;\n  color: white;\n  padding: 10px 20px;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n.view-only {\n  text-align: center;\n  color: gray;\n  padding: 20px;\n}\n\n.messages-feed {\n  margin-top: 20px;\n}\n\n.message-card {\n  background: white;\n  padding: 15px;\n  margin: 10px 0;\n  border-radius: 8px;\n  box-shadow: 0 1px 3px rgba(0,0,0,0.1);\n}\n\n.no-messages {\n  text-align: center;\n  color: gray;\n  padding: 20px;\n}"],
+  "mappings": ";AAAA,CAAC;AACC,aAAW;AACX,UAAQ,EAAE;AACV,WAAS;AACX;AAEA,CAAC;AACC,cAAY;AACZ,UAAQ;AACR,cAAY;AACZ,iBAAe;AACf,WAAS;AACX;AAEA,CAAC;AACC,iBAAe;AACjB;AAEA,CAAC;AACC,SAAO;AACP,WAAS;AACT,UAAQ,IAAI,MAAM;AAClB,iBAAe;AACf,UAAQ;AACR,iBAAe;AACjB;AAEA,CAAC;AACC,cAAY;AACZ,SAAO;AACP,WAAS,KAAK;AACd,UAAQ;AACR,iBAAe;AACf,UAAQ;AACV;AAEA,CAAC;AACC,cAAY;AACZ,SAAO;AACP,WAAS;AACX;AAEA,CAAC;AACC,cAAY;AACd;AAEA,CAAC;AACC,cAAY;AACZ,WAAS;AACT,UAAQ,KAAK;AACb,iBAAe;AACf,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAC,CAAC,EAAC,CAAC,EAAC;AACnC;AAEA,CAAC;AACC,cAAY;AACZ,SAAO;AACP,WAAS;AACX;",
+  "names": []
+}

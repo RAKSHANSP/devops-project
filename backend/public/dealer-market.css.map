@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/dealer-market/dealer-market.css"],
+  "sourcesContent": ["h3 {\n  color: #333;\n}\n\nul {\n  text-align: left;\n}\n\nli {\n  box-shadow: 0 2px 4px rgba(0,0,0,0.1);\n}\n\ninput, button {\n  border-radius: 4px;\n}"],
+  "mappings": ";AAAA;AACE,SAAO;AACT;AAEA;AACE,cAAY;AACd;AAEA;AACE,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAC,CAAC,EAAC,CAAC,EAAC;AACnC;AAEA;AAAO;AACL,iBAAe;AACjB;",
+  "names": []
+}

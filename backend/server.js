@@ -11,6 +11,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+/* ==============================
+   STATIC FRONTEND (Angular)
+============================== */
+
+const PUBLIC_DIR = path.join(__dirname, "public");
+app.use(express.static(PUBLIC_DIR));
+
+
 // Ensure uploads directory exists
 const UPLOAD_DIR = path.join(__dirname, 'uploads');
 if (!fs.existsSync(UPLOAD_DIR)) {
@@ -507,5 +515,5 @@ app.get('/group-messages/:groupId', async (req, res) => {
 }); 
 
 // ===== Start Server =====
-const PORT = 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

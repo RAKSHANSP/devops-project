@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/styles.css"],
+  "sourcesContent": ["/* You can add global styles to this file, and also import other style files */\nbody { margin: 0; font-family: Arial, sans-serif; }\na { text-decoration: none; }\nbutton { cursor: pointer; }"],
+  "mappings": ";AACA;AAAO,UAAQ;AAAG,eAAa,KAAK,EAAE;AAAY;AAClD;AAAI,mBAAiB;AAAM;AAC3B;AAAS,UAAQ;AAAS;",
+  "names": []
+}

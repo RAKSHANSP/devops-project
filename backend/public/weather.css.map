@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["src/app/weather/weather.css"],
+  "sourcesContent": ["h2 {\n  color: #1e3a8a;\n  text-transform: uppercase;\n  letter-spacing: 1px;\n}\n\ninput {\n  border: 2px solid #1e40af;\n  border-radius: 8px;\n  font-size: 16px;\n  color: #1e3a8a;\n  transition: border-color 0.3s;\n}\n\ninput:focus {\n  border-color: #1e3a8a;\n  outline: none;\n}\n\nbutton {\n  border-radius: 8px;\n  text-transform: uppercase;\n}\n\nbutton:hover {\n  background: #1e3a8a;\n}\n\nbutton[style*=\"background: green\"]:hover {\n  background: #1ea55e;\n}\n\ndiv[style*=\"background: #ffffff\"], div[style*=\"display: flex\"] > div {\n  box-shadow: 0 4px 8px rgba(0,0,0,0.1);\n  border-left: 4px solid #1e40af;\n}"],
+  "mappings": ";AAAA;AACE,SAAO;AACP,kBAAgB;AAChB,kBAAgB;AAClB;AAEA;AACE,UAAQ,IAAI,MAAM;AAClB,iBAAe;AACf,aAAW;AACX,SAAO;AACP,cAAY,aAAa;AAC3B;AAEA,KAAK;AACH,gBAAc;AACd,WAAS;AACX;AAEA;AACE,iBAAe;AACf,kBAAgB;AAClB;AAEA,MAAM;AACJ,cAAY;AACd;AAEA,MAAM,CAAC,2BAA2B;AAChC,cAAY;AACd;AAEA,GAAG,CAAC;AAA+B,GAAG,CAAC,wBAAwB,EAAE;AAC/D,cAAY,EAAE,IAAI,IAAI,KAAK,CAAC,EAAC,CAAC,EAAC,CAAC,EAAC;AACjC,eAAa,IAAI,MAAM;AACzB;",
+  "names": []
+}
