@@ -9,13 +9,13 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/YOUR_USERNAME/YOUR_REPO.git'
+                git 'https://github.com/RAKSHANSP/devops-project.git'
             }
         }
 
         stage('Build') {
             steps {
-                sh 'echo Build Successful'
+                sh 'echo Building the project'
             }
         }
 
@@ -24,13 +24,13 @@ pipeline {
                 withSonarQubeEnv('My Sonar Server') {
                     sh '''
                     sonar-scanner \
-                    -Dsonar.projectKey=AgriConnect \
+                    -Dsonar.projectKey=devops-project \
                     -Dsonar.sources=. \
-                    -Dsonar.host.url=http://localhost:9000 \
-                    -Dsonar.login=$SONAR_AUTH_TOKEN
+                    -Dsonar.host.url=http://localhost:9000
                     '''
                 }
             }
         }
+
     }
 }
